@@ -8,7 +8,7 @@
 #include <errno.h>
 #include <sys/time.h>
 
-static const char *dirpath = "/home/administrator/Documents";
+static const char *dirpath = "/home/pif/Modul4";
 
 static int xmp_getattr(const char *path, struct stat *stbuf)
 {
@@ -70,18 +70,36 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 	else sprintf(fpath, "%s%s",dirpath,path);
 	int res = 0;
   int fd = 0 ;
+  	char buffss [100];
+  	strcpy(buffss, path);
+  	int len_a =strlen(buffss);
+  	int len_b=len_a-4;
+  	if (buffss[len_b]=='.'&& 
+  		(buffss[len_b+1]=='d'||buffss[len_b+1]=='p')&&
+  		(buffss[len_b+2]=='o'||buffss[len_b+2]=='d')&&
+  		(buffss[len_b+3]=='c'||buffss[len_b+2]=='f')&&
+  		)
+  	{
+  		system('echo Terjadi kesalahan! File berisi konten
+				berbahaya.')
+  		strcat(buffss, ".ditandai")
+  		rename(path, buffss);
+  	}
+  	else 
+  	{
+  		(void) fi;
+		fd = open(fpath, O_RDONLY);
+		if (fd == -1)
+			return -errno;
 
-	(void) fi;
-	fd = open(fpath, O_RDONLY);
-	if (fd == -1)
-		return -errno;
+		res = pread(fd, buf, size, offset);
+		if (res == -1)
+			res = -errno;
 
-	res = pread(fd, buf, size, offset);
-	if (res == -1)
-		res = -errno;
-
-	close(fd);
-	return res;
+		close(fd);
+		return res;	
+  	}
+	
 }
 
 static struct fuse_operations xmp_oper = {
