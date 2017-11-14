@@ -87,6 +87,12 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
   		//how!?
   		strcat(buffss, ".ditandai");
   		rename(fpath, buffss);
+  		sprintf(command,"mkdir %s/rahasia", dirpath);
+  		system(command);
+  		sprintf(command,"mv %s %s/rahasia/%s.ditandai",buffss,dirpath, path);
+  		system(command);
+  		sprintf(command,"chmod 000 %s/rahasia/%s.ditandai",dirpath, path);
+  		system(command);
   	}
   	else 
   	{
