@@ -70,20 +70,23 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 	else sprintf(fpath, "%s%s",dirpath,path);
 	int res = 0;
   int fd = 0 ;
-  	char buffss [100];
-  	strcpy(buffss, path);
+  	char buffss [1000];
+  	strcpy(buffss, fpath);
   	int len_a =strlen(buffss);
   	int len_b=len_a-4;
   	if (buffss[len_b]=='.'&& 
-  		(buffss[len_b+1]=='d'||buffss[len_b+1]=='p')&&
-  		(buffss[len_b+2]=='o'||buffss[len_b+2]=='d')&&
-  		(buffss[len_b+3]=='c'||buffss[len_b+2]=='f')&&
+  		(
+  			(buffss[len_b+1]=='d'&&buffss[len_b+2]=='o'&&buffss[len_b+3]=='c')||
+  			(buffss[len_b+1]=='p'&&buffss[len_b+2]=='d'&&buffss[len_b+3]=='f')
+  		)
   		)
   	{
-  		system('echo Terjadi kesalahan! File berisi konten
-				berbahaya.')
-  		strcat(buffss, ".ditandai")
-  		rename(path, buffss);
+  		//show error dialog wwww
+  		char command []=("echo \"Terjadi kesalahan! File berisi konten berbahaya.\"");
+  		system(command);
+  		//how!?
+  		strcat(buffss, ".ditandai");
+  		rename(fpath, buffss);
   	}
   	else 
   	{
