@@ -61,7 +61,7 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 		    struct fuse_file_info *fi)
 {
-  char fpath[1000];
+  	char fpath[1000];
 	if(strcmp(path,"/") == 0)
 	{
 		path=dirpath;
@@ -111,6 +111,41 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 		return res;	
   	}
 	
+}
+
+
+static int xmp_write(const char *path, const char *buf, size_t size,
+		     off_t offset, struct fuse_file_info *fi)
+{
+	int fd;
+	int res;
+	char fpath[1000];
+	if(strcmp(path,"/") == 0)
+	{
+		path=dirpath;
+		sprintf(fpath,"%s",path);
+	}
+	else sprintf(fpath, "%s%s",dirpath,path);
+	char *filename = (strstr(fpath, "/Downloads/"));
+	if (filename!=NULL)
+	{
+		char command[500];
+		sprintf(command, "mkdir %s/Downloads/Simpanan", dirpath);
+		system(command);
+		sprintf(fpath,"%s/Downloads/Simpanan/%s", dirpath, filename);
+	}
+
+	(void) fi;
+	fd = open(fpath, O_WRONLY);
+	if (fd == -1)
+		return -errno;
+
+	res = pwrite(fd, buf, size, offset);
+	if (res == -1)
+		res = -errno;
+
+	close(fd);
+	return res;
 }
 
 static struct fuse_operations xmp_oper = {
