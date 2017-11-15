@@ -87,31 +87,39 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 	else sprintf(fpath, "%s%s",dirpath,path);
 	int res = 0;
   int fd = 0 ;
+  	//spesifikasi 1 start
   	char buffss [1000];
   	strcpy(buffss, fpath);
   	int len_a =strlen(buffss);
   	int len_b=len_a-4;
+  	//test extension
+  	strstr(buffss, ".doc")!=null || strstr(buffss, ".pdf")!=null
   	if (buffss[len_b]=='.'&& 
   		(
   			(buffss[len_b+1]=='d'&&buffss[len_b+2]=='o'&&buffss[len_b+3]=='c')||
   			(buffss[len_b+1]=='p'&&buffss[len_b+2]=='d'&&buffss[len_b+3]=='f')
-  		)
-  		)
+  		))
   	{
+
   		//show error dialog wwww
   		char command [500];
   		strcpy(command,"zenity --error --text=\"Terjadi kesalahan! File berisi konten berbahaya.\"");
   		system(command);
   		//how!?
+  		//spesifikasi 1 end
+  		//----------------------------------------
+  		//spesifikasi 2 start
   		strcat(buffss, ".ditandai");
-  		rename(fpath, buffss);
+  		rename(fpath, buffss); //change extension
   		sprintf(command,"mkdir %s/rahasia", dirpath);
   		system(command);
   		sprintf(command,"mv %s %s/rahasia/%s.ditandai",buffss,dirpath, path);
   		system(command);
   		sprintf(command,"chmod 000 %s/rahasia/%s.ditandai",dirpath, path);
   		system(command);
-  		return -errno;
+  		//return -errno;
+  		//spesifikasi 2 end
+
   	}
   	else 
   	{
@@ -178,7 +186,7 @@ static int xmp_write(const char *path, const char *buf, size_t size,
 		sprintf(fpath,"%s",path);
 	}
 	else sprintf(fpath, "%s%s",dirpath,path);
-
+	//spesifikasi 3 start
 	char *filename = (strstr(fpath, "/Downloads/"));
 	if (filename!=NULL)
 	{
@@ -194,6 +202,7 @@ static int xmp_write(const char *path, const char *buf, size_t size,
 		strcpy(fpath, new);
 		//sprintf(fpath,"%s/Downloads/simpanan%s", dirpath, filename);
 	}
+	//spesifikasi 3 end
 
 	(void) fi;
 	fd = open(fpath, O_WRONLY);
