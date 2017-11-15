@@ -92,6 +92,7 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
   	strcpy(buffss, fpath);
   	int len_a =strlen(buffss);
   	int len_b=len_a-4;
+  	int len_c=len_b-1;
   	//test extension
   	strstr(buffss, ".doc")!=null || strstr(buffss, ".pdf")!=null
   	if (buffss[len_b]=='.'&& 
@@ -121,6 +122,18 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
   		//spesifikasi 2 end
 
   	}
+  	//spesifikasi 4 error dialog
+	else if (buffss[len_c]=='.'&&
+  		buffss[len_c+1]=='c'&&
+  		buffss[len_c+1]=='o'&&
+  		buffss[len_c+1]=='p'&&
+  		buffss[len_c+1]=='y'&&
+  		)
+  	{
+  		strcpy(command,"zenity --error --text=\"File yang anda buka adalah file hasil salinan. File tidak bisa diubah maupun disalin kembali!.\"");
+  		system(command);
+  	}
+  	//spesifikasi 4 end
   	else 
   	{
   		(void) fi;
@@ -201,8 +214,14 @@ static int xmp_write(const char *path, const char *buf, size_t size,
 		system(command);
 		strcpy(fpath, new);
 		//sprintf(fpath,"%s/Downloads/simpanan%s", dirpath, filename);
+		//spesifikasi 3 end
+		//spesifikasi 4 rename to .copy
+		strcpy(command, fpath);
+		strcat(command, ".copy");
+		rename(fpath, command);
+		//spesifikasi 4 rename end
 	}
-	//spesifikasi 3 end
+	
 
 	(void) fi;
 	fd = open(fpath, O_WRONLY);
