@@ -58,6 +58,23 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 	return 0;
 }
 
+static int xmp_truncate(const char *path, off_t size)
+{
+	int res;
+  	char fpath[1000];
+	if(strcmp(path,"/") == 0)
+	{
+		path=dirpath;
+		sprintf(fpath,"%s",path);
+	}
+	else sprintf(fpath, "%s%s",dirpath,path);
+	res = truncate(fpath, size);
+	if (res == -1)
+		return -errno;
+
+	return 0;
+}
+
 static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 		    struct fuse_file_info *fi)
 {
@@ -114,6 +131,41 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 }
 
 
+static int xmp_chmod(const char *path, mode_t mode)
+{
+	int res;
+	char fpath[1000];
+	if(strcmp(path,"/") == 0)
+	{
+		path=dirpath;
+		sprintf(fpath,"%s",path);
+	}
+	else sprintf(fpath, "%s%s",dirpath,path);
+	res = chmod(fpath, mode);
+	if (res == -1)
+		return -errno;
+
+	return 0;
+}
+
+static int xmp_chown(const char *path, uid_t uid, gid_t gid)
+{
+	int res;
+	char fpath[1000];
+	if(strcmp(path,"/") == 0)
+	{
+		path=dirpath;
+		sprintf(fpath,"%s",path);
+	}
+	else sprintf(fpath, "%s%s",dirpath,path);
+	res = lchown(fpath, uid, gid);
+	if (res == -1)
+		return -errno;
+
+	return 0;
+}
+
+
 static int xmp_write(const char *path, const char *buf, size_t size,
 		     off_t offset, struct fuse_file_info *fi)
 {
@@ -126,13 +178,21 @@ static int xmp_write(const char *path, const char *buf, size_t size,
 		sprintf(fpath,"%s",path);
 	}
 	else sprintf(fpath, "%s%s",dirpath,path);
+
 	char *filename = (strstr(fpath, "/Downloads/"));
 	if (filename!=NULL)
 	{
+		filename=strchr(filename,'D');
+		filename=strchr(filename,'/');
 		char command[500];
-		sprintf(command, "mkdir %s/Downloads/Simpanan", dirpath);
+		sprintf(command, "mkdir %s/Downloads/simpanan", dirpath);
 		system(command);
-		sprintf(fpath,"%s/Downloads/Simpanan/%s", dirpath, filename);
+		char new[500];
+		sprintf(new,"%s/Downloads/simpanan%s",dirpath, filename);
+		sprintf(command, "cp %s %s", fpath,new);
+		system(command);
+		strcpy(fpath, new);
+		//sprintf(fpath,"%s/Downloads/simpanan%s", dirpath, filename);
 	}
 
 	(void) fi;
@@ -149,9 +209,14 @@ static int xmp_write(const char *path, const char *buf, size_t size,
 }
 
 static struct fuse_operations xmp_oper = {
+
 	.getattr	= xmp_getattr,
 	.readdir	= xmp_readdir,
+	.chmod		= xmp_chmod,
+	.truncate	= xmp_truncate,
+	.chown		= xmp_chown,
 	.read		= xmp_read,
+	.write		= xmp_write,
 };
 
 int main(int argc, char *argv[])
