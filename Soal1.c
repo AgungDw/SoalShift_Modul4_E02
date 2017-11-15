@@ -100,7 +100,7 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
   	{
   		//show error dialog wwww
   		char command [500];
-  		strcpy(command,"echo \"Terjadi kesalahan! File berisi konten berbahaya.\"");
+  		strcpy(command,"zenity --error --text=\"Terjadi kesalahan! File berisi konten berbahaya.\"");
   		system(command);
   		//how!?
   		strcat(buffss, ".ditandai");
