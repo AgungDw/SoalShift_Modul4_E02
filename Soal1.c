@@ -94,7 +94,6 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
   	int len_b=len_a-4;
   	int len_c=len_b-1;
   	//test extension
-  	strstr(buffss, ".doc")!=null || strstr(buffss, ".pdf")!=null
   	if (buffss[len_b]=='.'&& 
   		(
   			(buffss[len_b+1]=='d'&&buffss[len_b+2]=='o'&&buffss[len_b+3]=='c')||
@@ -106,8 +105,7 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
   		char command [500];
   		strcpy(command,"zenity --error --text=\"Terjadi kesalahan! File berisi konten berbahaya.\"");
   		system(command);
-  		//how!?
-  		//spesifikasi 1 end
+  		//spesifikasi 1 end  		
   		//----------------------------------------
   		//spesifikasi 2 start
   		strcat(buffss, ".ditandai");
@@ -120,16 +118,16 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
   		system(command);
   		//return -errno;
   		//spesifikasi 2 end
-
   	}
   	//spesifikasi 4 error dialog
 	else if (buffss[len_c]=='.'&&
   		buffss[len_c+1]=='c'&&
-  		buffss[len_c+1]=='o'&&
-  		buffss[len_c+1]=='p'&&
-  		buffss[len_c+1]=='y'&&
+  		buffss[len_c+2]=='o'&&
+  		buffss[len_c+3]=='p'&&
+  		buffss[len_c+4]=='y'
   		)
   	{
+  		char command [500];
   		strcpy(command,"zenity --error --text=\"File yang anda buka adalah file hasil salinan. File tidak bisa diubah maupun disalin kembali!.\"");
   		system(command);
   	}
@@ -201,11 +199,14 @@ static int xmp_write(const char *path, const char *buf, size_t size,
 	else sprintf(fpath, "%s%s",dirpath,path);
 	//spesifikasi 3 start
 	char *filename = (strstr(fpath, "/Downloads/"));
+	int flag =0;
+	char command[500];
 	if (filename!=NULL)
 	{
+		flag=1;
 		filename=strchr(filename,'D');
 		filename=strchr(filename,'/');
-		char command[500];
+		
 		sprintf(command, "mkdir %s/Downloads/simpanan", dirpath);
 		system(command);
 		char new[500];
@@ -213,13 +214,9 @@ static int xmp_write(const char *path, const char *buf, size_t size,
 		sprintf(command, "cp %s %s", fpath,new);
 		system(command);
 		strcpy(fpath, new);
-		//sprintf(fpath,"%s/Downloads/simpanan%s", dirpath, filename);
+		sprintf(fpath,"%s/Downloads/simpanan%s", dirpath, filename);
 		//spesifikasi 3 end
-		//spesifikasi 4 rename to .copy
-		strcpy(command, fpath);
-		strcat(command, ".copy");
-		rename(fpath, command);
-		//spesifikasi 4 rename end
+		
 	}
 	
 
@@ -233,6 +230,15 @@ static int xmp_write(const char *path, const char *buf, size_t size,
 		res = -errno;
 
 	close(fd);
+	if (flag=1)
+	{
+	//spesifikasi 4 rename to .copy
+		strcpy(command, fpath);
+		strcat(command, ".copy");
+		rename(fpath, command);
+	//spesifikasi 4 rename end		
+	}
+
 	return res;
 }
 
