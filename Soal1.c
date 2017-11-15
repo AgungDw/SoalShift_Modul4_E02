@@ -82,7 +82,8 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
   		)
   	{
   		//show error dialog wwww
-  		char command []=("echo \"Terjadi kesalahan! File berisi konten berbahaya.\"");
+  		char command [500];
+  		strcpy(command,"echo \"Terjadi kesalahan! File berisi konten berbahaya.\"");
   		system(command);
   		//how!?
   		strcat(buffss, ".ditandai");
@@ -93,6 +94,7 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
   		system(command);
   		sprintf(command,"chmod 000 %s/rahasia/%s.ditandai",dirpath, path);
   		system(command);
+  		return -errno;
   	}
   	else 
   	{
