@@ -129,6 +129,8 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 	  		char command [500];
 	  		strcpy(command,"zenity --error --text=\"Terjadi kesalahan! File berisi konten berbahaya.\"");
 	  		system(command);
+			strcat(buffss,".ditandai");
+			rename(fpath, buffss);
 	  		//spesifikasi 1 end  		
 	  		//----------------------------------------
 	  	}
