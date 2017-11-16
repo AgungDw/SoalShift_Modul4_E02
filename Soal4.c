@@ -204,10 +204,28 @@ static int xmp_write(const char *path, const char *buf, size_t size,
 		sprintf(fpath,"%s",path);
 	}
 	else sprintf(fpath, "%s%s",dirpath,path);
-	//spesifikasi 3 start
-	char *filename = (strstr(fpath, "/Downloads/"));
+	
+	//spesifikasi4 check .copy
 	int flag =0;
 	char command[500];
+	char buffss [1000];
+	strcpy(buffss, fpath);
+  	int len_a =strlen(fpath);
+  	int len_c=len_a-5; 
+  	if (buffss[len_c]=='.'&&
+  		buffss[len_c+1]=='c'&&
+  		buffss[len_c+2]=='o'&&
+  		buffss[len_c+3]=='p'&&
+  		buffss[len_c+4]=='y'
+  		)
+  	{
+  		char command [500];
+  		strcpy(command,"zenity --error --text=\"File yang anda buka adalah file hasil salinan. File tidak bisa diubah maupun disalin kembali!.\"");
+  		system(command);
+  	}
+  	//spesifikasi 4 check end
+  	//spesifikasi 3 start
+  	char *filename = (strstr(fpath, "/Downloads/"));
 	if (filename!=NULL)
 	{
 		flag=1;
