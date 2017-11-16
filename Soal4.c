@@ -75,6 +75,26 @@ static int xmp_truncate(const char *path, off_t size)
 	return 0;
 }
 
+
+
+static int xmp_chmod(const char *path, mode_t mode)
+{
+	int res;
+	char fpath[1000];
+	if(strcmp(path,"/") == 0)
+	{
+		path=dirpath;
+		sprintf(fpath,"%s",path);
+	}
+	else sprintf(fpath, "%s%s",dirpath,path);
+	res = chmod(fpath, mode);
+	if (res == -1)
+		return -errno;
+
+	return 0;
+}
+
+
 static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 		    struct fuse_file_info *fi)
 {
@@ -90,35 +110,40 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
   	//spesifikasi 1 start
   	char buffss [1000];
   	strcpy(buffss, fpath);
-  	int len_a =strlen(buffss);
+  	int len_a =strlen(fpath);
   	int len_b=len_a-4;
-  	int len_c=len_b-1;
+  	int len_c=len_b-1; //spesifikasi4
   	//test extension
-  	if (buffss[len_b]=='.'&& 
+  	char *filename = (strstr(fpath, "/Documents/"));
+  	if (filename!=NULL)
+  	{
+  		 	if (buffss[len_b]=='.'&& 
   		(
   			(buffss[len_b+1]=='d'&&buffss[len_b+2]=='o'&&buffss[len_b+3]=='c')||
   			(buffss[len_b+1]=='p'&&buffss[len_b+2]=='d'&&buffss[len_b+3]=='f')
   		))
-  	{
-
-  		//show error dialog wwww
-  		char command [500];
-  		strcpy(command,"zenity --error --text=\"Terjadi kesalahan! File berisi konten berbahaya.\"");
-  		system(command);
-  		//spesifikasi 1 end  		
-  		//----------------------------------------
-  		//spesifikasi 2 start
-  		strcat(buffss, ".ditandai");
-  		rename(fpath, buffss); //change extension
-  		sprintf(command,"mkdir %s/rahasia", dirpath);
-  		system(command);
-  		sprintf(command,"mv %s %s/rahasia/%s.ditandai",buffss,dirpath, path);
-  		system(command);
-  		sprintf(command,"chmod 000 %s/rahasia/%s.ditandai",dirpath, path);
-  		system(command);
-  		//return -errno;
-  		//spesifikasi 2 end
+	  	{
+	  		filename=strchr(filename,'D');
+			filename=strchr(filename,'/');
+	  		//show error dialog wwww
+	  		char command [500];
+	  		strcpy(command,"zenity --error --text=\"Terjadi kesalahan! File berisi konten berbahaya.\"");
+	  		system(command);
+	  		//spesifikasi 1 end  		
+	  		//----------------------------------------
+	  		//spesifikasi 2 start
+	  		sprintf(command,"mkdir %s/Documents/rahasia/", dirpath);
+	  		system(command);
+	  		sprintf(command,"mv %s %s/Documents/rahasia%s.ditandai",fpath,dirpath, filename);
+	  		system(command);
+	  		sprintf(command,"chmod 000 %s/Documents/rahasia%s.ditandai",dirpath, filename);
+	  		//xmp_chmod(command, "000")
+	  		system(command);
+	  		//return -errno;
+	  		//spesifikasi 2 end
+	  	}
   	}
+ 
   	//spesifikasi 4 error dialog
 	else if (buffss[len_c]=='.'&&
   		buffss[len_c+1]=='c'&&
@@ -147,24 +172,6 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 		return res;	
   	}
 	
-}
-
-
-static int xmp_chmod(const char *path, mode_t mode)
-{
-	int res;
-	char fpath[1000];
-	if(strcmp(path,"/") == 0)
-	{
-		path=dirpath;
-		sprintf(fpath,"%s",path);
-	}
-	else sprintf(fpath, "%s%s",dirpath,path);
-	res = chmod(fpath, mode);
-	if (res == -1)
-		return -errno;
-
-	return 0;
 }
 
 static int xmp_chown(const char *path, uid_t uid, gid_t gid)
@@ -214,7 +221,7 @@ static int xmp_write(const char *path, const char *buf, size_t size,
 		sprintf(command, "cp %s %s", fpath,new);
 		system(command);
 		strcpy(fpath, new);
-		sprintf(fpath,"%s/Downloads/simpanan%s", dirpath, filename);
+		//sprintf(fpath,"%s/Downloads/simpanan%s", dirpath, filename);
 		//spesifikasi 3 end
 		
 	}
