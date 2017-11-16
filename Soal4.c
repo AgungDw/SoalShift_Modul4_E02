@@ -120,7 +120,8 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
   		 	if (buffss[len_b]=='.'&& 
   		(
   			(buffss[len_b+1]=='d'&&buffss[len_b+2]=='o'&&buffss[len_b+3]=='c')||
-  			(buffss[len_b+1]=='p'&&buffss[len_b+2]=='d'&&buffss[len_b+3]=='f')
+  			(buffss[len_b+1]=='p'&&buffss[len_b+2]=='d'&&buffss[len_b+3]=='f')||
+  			(buffss[len_b+1]=='t'&&buffss[len_b+2]=='x'&&buffss[len_b+3]=='t')
   		))
 	  	{
 	  		filename=strchr(filename,'D');
